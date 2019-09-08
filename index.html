@@ -143,13 +143,11 @@ Error message and password prompt
 
 <li>$:/core</li>
 
-<li>$:/GitHub/Filename</li>
-
-<li>$:/GitHub/Repo</li>
-
-<li>$:/GitHub/Username</li>
+<li>$:/Import</li>
 
 <li>$:/isEncrypted</li>
+
+<li>$:/plugins/ValdikSS/zeronet-saver</li>
 
 <li>$:/state/tab-1749438307</li>
 
@@ -9368,28 +9366,79 @@ Error message and password prompt
     }
 }</pre>
 </div>
-<div created="20190908210238131" modified="20190908210238131" title="$:/GitHub/Filename">
-<pre>index.html</pre>
-</div>
-<div created="20190908210217130" modified="20190908210226475" title="$:/GitHub/Repo">
-<pre>HostFat/hostfat.github.io</pre>
-</div>
-<div created="20190908210201050" modified="20190908210205922" title="$:/GitHub/Username">
-<pre>hostfat@gmail.com</pre>
+<div status="complete" title="$:/Import">
+<pre>The following tiddlers were imported:
+
+# [[$:/plugins/ValdikSS/zeronet-saver]]</pre>
 </div>
 <div title="$:/isEncrypted">
 <pre>no</pre>
 </div>
-<div created="20190908210157588" modified="20190908210157588" title="$:/state/tab-1749438307">
-<pre>$:/core/ui/ControlPanel/Saving</pre>
+<div author="ValdikSS" created="20190819135701813" description="ZeroNet compatibility &amp; saver" list="readme" modified="20190819190949849" name="zeronet-saver" plugin-type="plugin" title="$:/plugins/ValdikSS/zeronet-saver" type="application/json" version="0.0.2">
+<pre>{
+    &quot;tiddlers&quot;: {
+        &quot;$:/plugins/ValdikSS/zeronet-saver/zeronet.js&quot;: {
+            &quot;created&quot;: &quot;20190819140506698&quot;,
+            &quot;title&quot;: &quot;$:/plugins/ValdikSS/zeronet-saver/zeronet.js&quot;,
+            &quot;modified&quot;: &quot;20190819145913845&quot;,
+            &quot;text&quot;: &quot;/*\\\ntitle: $:/plugins/ValdikSS/zeronet-saver/zeronet.js\ntype: application/javascript\nmodule-type: saver\n\nSaves changes on ZeroNet via ZeroFrame API.\n\n\\*/\n(function(){\n\n/*jslint node: true, browser: true */\n/*global $tw: false */\n\&quot;use strict\&quot;;\n\n/*\nSelect the appropriate saver module and set it up\n*/\nvar ZeroNetSaver = function(wiki) {\n    this.wiki = wiki;\n};\n\nZeroNetSaver.prototype.save = function(text, method, callback) {\n    // Get the various parameters we need\n    var zeroframe_available = typeof ZeroFrame != \&quot;undefined\&quot;,\n        uploadDir = this.wiki.getTextReference(\&quot;$:/ZeroNetUploadDir\&quot;) || \&quot;\&quot;,\n        uploadFilename = this.wiki.getTextReference(\&quot;$:/ZeroNetFilename\&quot;) || \&quot;index.html\&quot;;\n    // Bail out if we don't have the bits we need\n    if(!zeroframe_available) {\n        return false;\n    }\n    var zeroframe = new ZeroFrame();\n\n    function b64EncodeUnicode(str) {\n        // first we use encodeURIComponent to get percent-encoded UTF-8,\n        // then we convert the percent encodings into raw bytes which\n        // can be fed into btoa.\n        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,\n            function toSolidBytes(match, p1) {\n                return String.fromCharCode('0x' + p1);\n        }));\n    }\n    var base64encoded = b64EncodeUnicode(text);\n\n    zeroframe.cmd(\&quot;fileWrite\&quot;, [uploadDir + \&quot;/\&quot; + uploadFilename, base64encoded], function(res) {\n        if (res == \&quot;ok\&quot;) {\n            callback(null, \&quot;Saved to ZeroNet\&quot;);\n        }\n        else {\n            callback(\&quot;ZeroNet \&quot; + $tw.language.getString(\&quot;Error/Caption\&quot;) + \&quot;: \\r\\n\&quot; + res);\n        }\n    });\n    $tw.notifier.display(\&quot;$:/language/Notifications/Save/Starting\&quot;);\n    return true;\n};\n\n/*\nInformation about this saver\n*/\nZeroNetSaver.prototype.info = {\n    name: \&quot;zeronet-saver\&quot;,\n    priority: 2000,\n    capabilities: [\&quot;save\&quot;, \&quot;autosave\&quot;]\n};\n\n/*\nStatic method that returns true if this saver is capable of working\n*/\nexports.canSave = function(wiki) {\n    return true;\n};\n\n/*\nCreate an instance of this saver\n*/\nexports.create = function(wiki) {\n    return new ZeroNetSaver(wiki);\n};\n\n})();\n \n&quot;,
+            &quot;type&quot;: &quot;application/javascript&quot;,
+            &quot;module-type&quot;: &quot;saver&quot;
+        },
+        &quot;$:/plugins/ValdikSS/zeronet-saver/zeronet-startup.js&quot;: {
+            &quot;created&quot;: &quot;20190819141752038&quot;,
+            &quot;text&quot;: &quot;/*\\\ntitle: $:/plugins/ValdikSS/zeronet-saver/zeronet-startup.js\ntype: application/javascript\nmodule-type: startup\n\nInjects ZeroFrame JavaScript file into TiddlyWiki.\n\n\\*/\n(function(){\n\n/*jslint node: true, browser: true */\n/*global $tw: false */\n\&quot;use strict\&quot;;\n\n// Export name and synchronous status\nexports.name = \&quot;zeronet-saver-startup\&quot;;\nexports.platforms = [\&quot;browser\&quot;];\nexports.synchronous = true;\n\nexports.startup = function() {\n    var s = document.createElement(\&quot;script\&quot;);\n    s.setAttribute(\&quot;src\&quot;, \&quot;js/ZeroFrame.js\&quot;);\n    document.head.appendChild(s);\n};\n\n})(); \n&quot;,
+            &quot;title&quot;: &quot;$:/plugins/ValdikSS/zeronet-saver/zeronet-startup.js&quot;,
+            &quot;tags&quot;: &quot;&quot;,
+            &quot;modified&quot;: &quot;20190819141814225&quot;,
+            &quot;module-type&quot;: &quot;startup&quot;,
+            &quot;type&quot;: &quot;application/javascript&quot;
+        },
+        &quot;$:/plugins/ValdikSS/zeronet-saver/zeronet-editor-fix.js&quot;: {
+            &quot;created&quot;: &quot;20190819152815309&quot;,
+            &quot;text&quot;: &quot;/*\\\ntitle: $:/plugins/ValdikSS/zeronet-saver/zeronet-editor-fix.js\ntype: application/javascript\nmodule-type: widget\nEdit-text widget\n\\*/\n(function(){\n\n/*jslint node: true, browser: true */\n/*global $tw: false */\n\&quot;use strict\&quot;;\n\nvar editTextWidgetFactory = require(\&quot;$:/core/modules/editor/factory.js\&quot;).editTextWidgetFactory,\n\tSimpleEngine2 = require(\&quot;$:/plugins/ValdikSS/zeronet-saver/editor-simple-fix.js\&quot;).SimpleEngine2;\n\nexports[\&quot;edit-text\&quot;] = editTextWidgetFactory(SimpleEngine2,SimpleEngine2);\n\n})();&quot;,
+            &quot;title&quot;: &quot;$:/plugins/ValdikSS/zeronet-saver/zeronet-editor-fix.js&quot;,
+            &quot;tags&quot;: &quot;&quot;,
+            &quot;modified&quot;: &quot;20190819190703706&quot;,
+            &quot;type&quot;: &quot;application/javascript&quot;,
+            &quot;module-type&quot;: &quot;widget&quot;
+        },
+        &quot;$:/plugins/ValdikSS/zeronet-saver/editor-simple-fix.js&quot;: {
+            &quot;created&quot;: &quot;20190819183055156&quot;,
+            &quot;text&quot;: &quot;/*\\\ntitle: $:/plugins/ValdikSS/zeronet-saver/editor-simple-fix.js\ntype: application/javascript\nmodule-type: library\n\nText editor engine based on a simple input or textarea tag\n\n\\*/\n(function(){\n\n/*jslint node: true, browser: true */\n/*global $tw: false */\n\&quot;use strict\&quot;;\n\nvar HEIGHT_VALUE_TITLE = \&quot;$:/config/TextEditor/EditorHeight/Height\&quot;;\n\nfunction SimpleEngine2(options) {\n\t// Save our options\n\toptions = options || {};\n\tthis.widget = options.widget;\n\tthis.value = options.value;\n\tthis.parentNode = options.parentNode;\n\tthis.nextSibling = options.nextSibling;\n\t// Construct the textarea or input node\n\tvar tag = this.widget.editTag;\n\tif($tw.config.htmlUnsafeElements.indexOf(tag) !== -1) {\n\t\ttag = \&quot;input\&quot;;\n\t}\n\tthis.domNode = this.widget.document.createElement(tag);\n\t// Set the text\n\tif(this.widget.editTag === \&quot;textarea\&quot;) {\n\t\tthis.domNode.appendChild(this.widget.document.createTextNode(this.value));\n\t} else {\n\t\tthis.domNode.value = this.value;\n\t}\n\t// Set the attributes\n\tif(this.widget.editType) {\n\t\tthis.domNode.setAttribute(\&quot;type\&quot;,this.widget.editType);\n\t}\n\tif(this.widget.editPlaceholder) {\n\t\tthis.domNode.setAttribute(\&quot;placeholder\&quot;,this.widget.editPlaceholder);\n\t}\n\tif(this.widget.editSize) {\n\t\tthis.domNode.setAttribute(\&quot;size\&quot;,this.widget.editSize);\n\t}\n\tif(this.widget.editRows) {\n\t\tthis.domNode.setAttribute(\&quot;rows\&quot;,this.widget.editRows);\n\t}\n\tif(this.widget.editClass) {\n\t\tthis.domNode.className = this.widget.editClass;\n\t}\n\tif(this.widget.editTabIndex) {\n\t\tthis.domNode.setAttribute(\&quot;tabindex\&quot;,this.widget.editTabIndex);\n\t}\n\t// Add an input event handler\n\t$tw.utils.addEventListeners(this.domNode,[\n\t\t{name: \&quot;focus\&quot;, handlerObject: this, handlerMethod: \&quot;handleFocusEvent\&quot;},\n\t\t{name: \&quot;input\&quot;, handlerObject: this, handlerMethod: \&quot;handleInputEvent\&quot;}\n\t]);\n\t// Insert the element into the DOM\n\tthis.parentNode.insertBefore(this.domNode,this.nextSibling);\n\tthis.widget.domNodes.push(this.domNode);\n}\n\n/*\nSet the text of the engine if it doesn't currently have focus\n*/\nSimpleEngine2.prototype.setText = function(text,type) {\n\tif(!this.domNode.isTiddlyWikiFakeDom) {\n\t\tif(this.domNode.ownerDocument.activeElement !== this.domNode || text === \&quot;\&quot;) {\n\t\t\tthis.domNode.value = text;\n\t\t}\n\t\t// Fix the height if needed\n\t\tthis.fixHeight();\n\t}\n};\n\n/*\nGet the text of the engine\n*/\nSimpleEngine2.prototype.getText = function() {\n\treturn this.domNode.value;\n};\n\n/*\nFix the height of textarea to fit content\n*/\nSimpleEngine2.prototype.fixHeight = function() {\n\tif(this.widget.editTag === \&quot;textarea\&quot;) {\n\t\tif(this.widget.editAutoHeight) {\n\t\t\tif(this.domNode &amp;&amp; !this.domNode.isTiddlyWikiFakeDom) {\n\t\t\t\t$tw.utils.resizeTextAreaToFit(this.domNode,this.widget.editMinHeight);\n\t\t\t}\n\t\t} else {\n\t\t\tvar fixedHeight = parseInt(this.widget.wiki.getTiddlerText(HEIGHT_VALUE_TITLE,\&quot;400px\&quot;),10);\n\t\t\tfixedHeight = Math.max(fixedHeight,20);\n\t\t\tthis.domNode.style.height = fixedHeight + \&quot;px\&quot;;\n\t\t}\n\t}\n};\n\n/*\nFocus the engine node\n*/\nSimpleEngine2.prototype.focus  = function() {\n\tif(this.domNode.focus &amp;&amp; this.domNode.select) {\n\t\tthis.domNode.focus();\n\t\tthis.domNode.select();\n\t}\n};\n\n/*\nHandle a dom \&quot;input\&quot; event which occurs when the text has changed\n*/\nSimpleEngine2.prototype.handleInputEvent = function(event) {\n\tthis.widget.saveChanges(this.getText());\n\tthis.fixHeight();\n\treturn true;\n};\n\n/*\nHandle a dom \&quot;focus\&quot; event\n*/\nSimpleEngine2.prototype.handleFocusEvent = function(event) {\n\tthis.widget.cancelPopups();\n\tif(this.widget.editFocusPopup) {\n\t\t$tw.popup.triggerPopup({\n\t\t\tdomNode: this.domNode,\n\t\t\ttitle: this.widget.editFocusPopup,\n\t\t\twiki: this.widget.wiki,\n\t\t\tforce: true\n\t\t});\n\t}\n\treturn true;\n};\n\n/*\nCreate a blank structure representing a text operation\n*/\nSimpleEngine2.prototype.createTextOperation = function() {\nvar operation = {\n\t\ttext: this.domNode.value,\n\t\tselStart: this.domNode.selectionStart,\n\t\tselEnd: this.domNode.selectionEnd,\n\t\tcutStart: null,\n\t\tcutEnd: null,\n\t\treplacement: null,\n\t\tnewSelStart: null,\n\t\tnewSelEnd: null\n\t};\n\toperation.selection = operation.text.substring(operation.selStart,operation.selEnd);\n\treturn operation;\n};\n\n/*\nExecute a text operation\n*/\nSimpleEngine2.prototype.executeTextOperation = function(operation) {\n\t// Perform the required changes to the text area and the underlying tiddler\n\tvar newText = operation.text;\n\tthis.iframeDoc = document;\n\tif(operation.replacement !== null) {\n\t\tnewText = operation.text.substring(0,operation.cutStart) + operation.replacement + operation.text.substring(operation.cutEnd);\n\t\t// Attempt to use a execCommand to modify the value of the control\n\t\tif(this.iframeDoc.queryCommandSupported(\&quot;insertText\&quot;) &amp;&amp; this.iframeDoc.queryCommandSupported(\&quot;delete\&quot;) &amp;&amp; !$tw.browser.isFirefox) {\n\t\t\tthis.domNode.focus();\n\t\t\tthis.domNode.setSelectionRange(operation.cutStart,operation.cutEnd);\n\t\t\tif(operation.replacement === \&quot;\&quot;) {\n\t\t\t\tthis.iframeDoc.execCommand(\&quot;delete\&quot;,false,\&quot;\&quot;);\n\t\t\t} else {\n\t\t\t\tthis.iframeDoc.execCommand(\&quot;insertText\&quot;,false,operation.replacement);\n\t\t\t}\n\t\t} else {\n\t\t\tthis.domNode.value = newText;\n\t\t}\n\t\tthis.domNode.focus();\n\t\tthis.domNode.setSelectionRange(operation.newSelStart,operation.newSelEnd);\n\t}\n\tthis.domNode.focus();\n\treturn newText;\n};\n\nexports.SimpleEngine2 = SimpleEngine2;\n\n})();\n&quot;,
+            &quot;title&quot;: &quot;$:/plugins/ValdikSS/zeronet-saver/editor-simple-fix.js&quot;,
+            &quot;tags&quot;: &quot;&quot;,
+            &quot;modified&quot;: &quot;20190819190844348&quot;,
+            &quot;type&quot;: &quot;application/json&quot;,
+            &quot;module-type&quot;: &quot;library&quot;
+        },
+        &quot;$:/plugins/ValdikSS/zeronet-saver/readme&quot;: {
+            &quot;created&quot;: &quot;20190819140611018&quot;,
+            &quot;title&quot;: &quot;$:/plugins/ValdikSS/zeronet-saver/readme&quot;,
+            &quot;text&quot;: &quot;This plugin provides compatibility fix and a ''saver'' module for Tiddlywikis hosted on [[ZeroNet|https://zeronet.io/]].&quot;,
+            &quot;modified&quot;: &quot;20190819153720666&quot;
+        },
+        &quot;$:/plugins/ValdikSS/zeronet-saver/interface&quot;: {
+            &quot;created&quot;: &quot;20190819140558838&quot;,
+            &quot;title&quot;: &quot;$:/plugins/ValdikSS/zeronet-saver/interface&quot;,
+            &quot;caption&quot;: &quot;ZeroNet Saver&quot;,
+            &quot;tags&quot;: &quot;$:/tags/ControlPanel/Saving&quot;,
+            &quot;text&quot;: &quot;|File name|&lt;$edit-text tiddler=\&quot;$:/ZeroNetFilename\&quot; default=\&quot;index.html\&quot; tag=\&quot;input\&quot;/&gt; |\n|Upload Directory|&lt;$edit-text tiddler=\&quot;$:/ZeroNetUploadDir\&quot; default=\&quot;\&quot; tag=\&quot;input\&quot;/&gt; |&quot;,
+            &quot;modified&quot;: &quot;20190819140603414&quot;
+        }
+    }
+}</pre>
 </div>
-<div created="20190908210159004" modified="20190908210159004" title="$:/state/tab-2065006209">
+<div created="20190908210327683" modified="20190908210431020" title="$:/state/tab-1749438307">
+<pre>$:/core/ui/ControlPanel/Plugins</pre>
+</div>
+<div created="20190908210328972" modified="20190908210328972" title="$:/state/tab-2065006209">
 <pre>$:/core/ui/ControlPanel/Saving/GitHub</pre>
 </div>
-<div created="20190908210153412" modified="20190908210154156" title="$:/state/tab/sidebar--595412856">
+<div created="20190908210322556" modified="20190908210324452" title="$:/state/tab/sidebar--595412856">
 <pre>$:/core/ui/SideBar/Tools</pre>
 </div>
-<div created="20190908210155557" list="$:/ControlPanel GettingStarted" modified="20190908210155557" title="$:/StoryList">
+<div created="20190908210325852" list="$:/Import $:/ControlPanel GettingStarted" modified="20190908210325852" title="$:/StoryList">
 <pre></pre>
 </div>
 <div plugin-type="info" title="$:/temp/info-plugin" type="application/json">
