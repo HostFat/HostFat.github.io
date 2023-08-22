@@ -141,7 +141,7 @@ Email: test@asfa.com - Telegram: @98jeux02938yr<br><br>
         .then(response => response.text())
         .then(data => {
             var rows = data.split('\n');
-            rows.forEach(row => {
+            rows.slice(0,rows.length-1).forEach(row => {
                 var columns = row.split(',');
                 commercianti.push({
                     nome: columns[0],
