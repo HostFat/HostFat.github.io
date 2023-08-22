@@ -137,9 +137,7 @@ Email: test@asfa.com - Telegram: @98jeux02938yr<br><br>
                 listaCommerciantiDiv.appendChild(commercianteDiv);
             });
         }
-
-        //fetch('https://www.dropbox.com/scl/fi/tez0t69s35ne1rmm1cze4/comm.csv?rlkey=x40j6ogf1tadh1y41ld20aj2y&dl=0', { mode: 'no-cors'})   
-		fetch('https://raw.githubusercontent.com/HostFat/hostfat.github.io/master/comm.csv')		
+	fetch('https://raw.githubusercontent.com/HostFat/hostfat.github.io/master/comm.csv')		
         .then(response => response.text())
         .then(data => {
             var rows = data.split('\n');
