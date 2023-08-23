@@ -41,20 +41,33 @@ La pagina carica ad ogni apertura la lista dei commercianti in modo randomico, n
 L'unico vantaggio riguarda i commercianti che accettano "anche" Bitcoin come mezzo di pagamento, mettendolo in evidenza rispetto agli altri.<br>
 La pagina è mantenuta gratuitamente, senza alcuna fonte di ricavo.<br>
 Email: test@asfa.com - Telegram: @98jeux02938yr<br><br>
-        <select id="filtro">
+        <select id="filtroProdotti">
             <!-- Le opzioni saranno aggiunte dinamicamente -->
         </select>
-        <button onclick="filtra()">Filtra</button>
+        <button onclick="filtraProdotti()">Filtra</button>
+		<select id="filtroProvince">
+            <!-- Le opzioni saranno aggiunte dinamicamente -->
+        </select>
+        <button onclick="filtraProvince()">Provincia</button>
         <div id="listaCommercianti"></div>
     </div>
 
     <script>
         var commercianti = [];
 
-        function filtra() {
-            var filtro = document.getElementById('filtro').value;
+        function filtraProdotti() {
+            var filtro = document.getElementById('filtroProdotti').value;
             var commerciantiFiltrati = commercianti.filter(function(commerciante) {
-                return commerciante.prodotti.includes(filtro);
+                return commerciante.prodotti.includes(filtroProdotti);
+            });
+            mostraCommercianti(commerciantiFiltrati);
+            ordina();
+        }
+		
+		function filtraProvince() {
+            var filtro = document.getElementById('filtroProvince').value;
+            var commerciantiFiltrati = commercianti.filter(function(commerciante) {
+                return commerciante.indirizzo.province.includes(filtro);
             });
             mostraCommercianti(commerciantiFiltrati);
             ordina();
@@ -72,8 +85,8 @@ Email: test@asfa.com - Telegram: @98jeux02938yr<br><br>
             });
         }
 
-        function popolaFiltro() {
-            var filtroSelect = document.getElementById('filtro');
+        function popolaFiltroProdotti() {
+            var filtroSelect = document.getElementById('filtroProdotti');
             var prodotti = [];
             commercianti.forEach(function(commerciante) {
                 commerciante.prodotti.forEach(function(prodotto) {
@@ -86,6 +99,22 @@ Email: test@asfa.com - Telegram: @98jeux02938yr<br><br>
                 var option = document.createElement('option');
                 option.value = prodotto;
                 option.textContent = prodotto;
+                filtroSelect.appendChild(option);
+            });
+        }
+		
+		function popolaFiltroProvince() {
+            var filtroSelect = document.getElementById('filtroProvince');
+            var province = [];
+            commercianti.forEach(function(commerciante) {
+		if (!province.includes(commerciante.indirizzo.province)) {
+                	province.push(commerciante.indirizzo.province);
+                }	 
+            });
+            province.forEach(function(provincia) {
+                var option = document.createElement('option');
+                option.value = provincia;
+                option.textContent = provincia;
                 filtroSelect.appendChild(option);
             });
         }
@@ -124,7 +153,7 @@ Email: test@asfa.com - Telegram: @98jeux02938yr<br><br>
                 infoDiv.appendChild(sistemiPagamentoH3);
 
                 var indirizzoH3 = document.createElement('h3');
-                indirizzoH3.textContent = 'Indirizzo: ' + commerciante.indirizzo;
+                indirizzoH3.textContent = 'Indirizzo: ' + commerciante.indirizzo.base + ', ' + commerciante.indirizzo.province;
                 indirizzoH3.className = 'info';
                 infoDiv.appendChild(indirizzoH3);
 
@@ -148,10 +177,13 @@ Email: test@asfa.com - Telegram: @98jeux02938yr<br><br>
                     logo: columns[1],
                     prodotti: columns[2].split('|'),
                     sistemiPagamento: columns[3].split('|'),
-                    indirizzo: columns[4],
+                    indirizzo: {
+						base: columns[4],
+						province: columns[5]
+					},
                     contatti: {
-                        telefono: columns[5],
-                        email: columns[6]
+                        telefono: columns[6],
+                        email: columns[7]
                     }
                 });
            });
@@ -159,7 +191,8 @@ Email: test@asfa.com - Telegram: @98jeux02938yr<br><br>
             // Funzioni per mostrare i commercianti, popolare il filtro, ecc.
             
         ordina();
-        popolaFiltro();
+        popolaFiltroProdotti();
+		popolaFiltroProvince();
         mostraCommercianti(commercianti);
         
     });
