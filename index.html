@@ -58,7 +58,7 @@ Email: test@asfa.com - Telegram: @98jeux02938yr<br><br>
         function filtraProdotti() {
             var filtro = document.getElementById('filtroProdotti').value;
             var commerciantiFiltrati = commercianti.filter(function(commerciante) {
-                return commerciante.prodotti.includes(filtroProdotti);
+                return commerciante.prodotti.includes(filtro);
             });
             mostraCommercianti(commerciantiFiltrati);
             ordina();
